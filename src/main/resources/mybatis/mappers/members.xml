@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.perfumeReco.dao.MemberDao">
+    
+    <resultMap id="MemberResultMap" type="com.perfumeReco.vo.Member">
+        <id     column="member_no"      property="no" />
+        <result column="member_id"      property="id" />
+        <result column="member_password"      property="password" />
+        <result column="member_phone_number"      property="phoneNumber" />
+        <result column="member_email"      property="email" />
+        <result column="member_gender"      property="gender" />
+        <result column="member_is_admin"      property="isAdmin" />
+        <result column="member_name"      property="name" />
+        <result column="member_login_type"      property="loginType" />
+        <result column="member_created_date"      property="createdDate" />
+        <result column="member_updated_date"      property="updatedDate" />
+    </resultMap>
+
+    <select id="getMemberByNo" parameterType="int" resultMap="MemberResultMap">
+        select *
+        from member
+        where member_no = #{no}
+    </select>
+
+    <insert id="insertMember" parameterType="com.perfumeReco.vo.Member">
+        <selectKey keyProperty="no" resultType="int" order="BEFORE">
+            select member_seq.nextval
+            from dual
+        </selectKey>
+        insert into member
+        (member_no, member_id, member_password)
+         values
+        (#{no}, #{id}, #{password}})
+    </insert>
+</mapper>
