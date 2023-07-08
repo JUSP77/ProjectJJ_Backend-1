@@ -3,6 +3,7 @@ package com.perfumeReco.service;
 import com.perfumeReco.dao.QuizDao;
 import com.perfumeReco.dto.ResponseDto;
 import com.perfumeReco.vo.Quiz;
+import com.perfumeReco.vo.QuizStatistics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,5 +45,29 @@ public class QuizService {
     public List<Quiz> getAllQuiz() {
 
         return quizDao.getAllQuiz();
+    }
+
+    public QuizStatistics getQuizStatistics(int no){
+
+        return quizDao.getQuizStatistics(no);
+    }
+
+    public void updateQuizStatistics(int quizNo, String answer) throws IOException{
+                                                    // 여기에는 quizNo만 들어있는 상태
+
+        QuizStatistics quizStatistics = new QuizStatistics();
+
+        int attempCount = getQuizStatistics(quizNo).getAttempCount();
+        int correctCount = getQuizStatistics(quizNo).getCorrectCount();
+        if (answer.equals("O")) {
+            attempCount ++;
+            correctCount ++;
+        }else{
+            attempCount ++;
+        }
+        quizStatistics.setCorrectCount(correctCount);
+        quizStatistics.setAttempCount(attempCount);
+        quizStatistics.setQuizNo(quizNo);
+        quizDao.updateQuizStatistics(quizStatistics);
     }
 }

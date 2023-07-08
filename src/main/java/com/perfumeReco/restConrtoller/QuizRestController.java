@@ -2,22 +2,27 @@ package com.perfumeReco.restConrtoller;
 
 import com.perfumeReco.dto.ResponseDto;
 import com.perfumeReco.service.QuizService;
+import com.perfumeReco.service.UserAnswerService;
 import com.perfumeReco.vo.Quiz;
+import com.perfumeReco.vo.QuizStatistics;
+import com.perfumeReco.vo.UserAnswer;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.util.StreamUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -27,13 +32,16 @@ public class QuizRestController {
 
     @Autowired
     private QuizService quizService;
+    @Autowired
+    private UserAnswerService userAnswerService;
+    private UserAnswer userAnswer = new UserAnswer();
 
     @GetMapping("getQuiz")
-    public ResponseDto<Quiz> getQuiz(){
+    public ResponseDto<Quiz> getQuiz() {
         ResponseDto<Quiz> response = new ResponseDto<>();
         List<Quiz> quizList = quizService.getAllQuiz();
 
-        for(Quiz quiz: quizList){
+        for (Quiz quiz : quizList) {
             byte[] imageABytes = quiz.getImageA();
             byte[] imageBBytes = quiz.getImageB();
             Blob imageABlob = convertBytesToBlob(imageABytes);
@@ -80,5 +88,30 @@ public class QuizRestController {
         }
         return null;
     }
+
+    @PostMapping("userAnswer")
+    public void userAnswer(
+            @RequestParam String answer,
+            @RequestParam int no,
+            HttpServletRequest request,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            QuizStatistics quizStatistics = new QuizStatistics();
+            Date currentTime = new Date();
+            userAnswer.setQuizNo(no);
+            userAnswer.setUserAnswer(answer);
+            userAnswer.setSubmissionTime(currentTime);
+            userAnswerService.insertUserAnswer(userAnswer);
+
+            quizService.updateQuizStatistics(no, answer);
+
+            redirectAttributes.addFlashAttribute("status", "OK");
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("status", "ERROR");
+            redirectAttributes.addFlashAttribute("error", "퀴즈 업로드에 실패했습니다: " + e.getMessage());
+        }
+    }
+
 
 }

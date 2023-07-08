@@ -12,6 +12,12 @@
         <result column="QUIZ_EXPLANATION" property="explanation"/>
     </resultMap>
 
+    <resultMap id="QuizStatisticsResultMap" type="com.perfumeReco.vo.QuizStatistics">
+        <id column="QUIZ_NO" property="quizNo"/>
+        <result column="ATTEMPT_COUNT" property="attempCount"/>
+        <result column="CORRECT_COUNT" property="correctCount"/>
+    </resultMap>
+
     <insert id="insertQuiz" parameterType="com.perfumeReco.vo.Quiz">
         INSERT INTO QUIZ (QUIZ_NO, QUIZ_IMG_A, QUIZ_IMG_B, QUIZ_CORRECT_ANSWER, QUIZ_HINT, QUIZ_EXPLANATION)
         VALUES (#{no}, #{imageA, jdbcType=BLOB}, #{imageB, jdbcType=BLOB}, #{correctAnswer}, #{hint}, #{explanation})
@@ -21,5 +27,17 @@
         select *
         from quiz
     </select>
+
+    <select id="getQuizStatistics" resultMap="QuizStatisticsResultMap">
+        select QUIZ_NO, ATTEMPT_COUNT, CORRECT_COUNT
+        from QUIZ_STATISTICS
+        where QUIZ_NO = #{ value }
+    </select>
+
+    <update id="updateQuizStatistics" parameterType="com.perfumeReco.vo.QuizStatistics">
+        UPDATE QUIZ_STATISTICS
+        SET ATTEMPT_COUNT = #{attempCount}, CORRECT_COUNT = #{correctCount}
+        WHERE QUIZ_NO = #{quizNo}
+    </update>
 
 </mapper>
