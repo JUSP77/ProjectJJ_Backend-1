@@ -1,37 +1,38 @@
 package com.perfumeReco.controller;
 
 import com.perfumeReco.form.MemberRegisterForm;
+import com.perfumeReco.service.QuizService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.lang.reflect.Member;
-
+@CrossOrigin(origins = "*")
 @Controller
 public class HomeController {
-    @GetMapping("/")
-    public String index(){
-        return "home";
-    }
+
+    @Autowired
+    QuizService quizService;
 
     @GetMapping("/loginform")
-    public String loginform(){
+    public String loginform() {
         return "member/loginform";
     }
 
     @GetMapping("/findid")
-    public String findid(){
+    public String findid() {
         return "member/findid";
     }
 
     @PostMapping("/findid")
-    public String findId(MemberRegisterForm form){
+    public String findId(MemberRegisterForm form) {
         return "home";
 
     }
 
     @GetMapping("/findpassword")
-    public String findpassword(){
+    public String findpassword() {
         return "member/findpassword";
     }
 }

@@ -21,13 +21,11 @@ import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @RestController
-@RequestMapping("/rest")
 @CrossOrigin(origins = "*")
+@RequestMapping("/rest")
 public class QuizRestController {
 
     @Autowired
@@ -114,4 +112,12 @@ public class QuizRestController {
     }
 
 
+    @GetMapping("/getCount")
+    public Map<String, Integer> getAttemptCount() {
+        QuizStatistics quizStatistics = quizService.getQuizStatistics(1);
+        int count = quizStatistics.getAttempCount();
+        Map<String, Integer> response = new HashMap<>();
+        response.put("count", count);
+        return response;
+    }
 }
