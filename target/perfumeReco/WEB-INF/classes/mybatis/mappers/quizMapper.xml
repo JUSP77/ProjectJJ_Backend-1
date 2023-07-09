@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.perfumeReco.dao.QuizDao">
+
+    <resultMap id="QuizResultMap" type="com.perfumeReco.vo.Quiz">
+        <id column="QUIZ_NO" property="no"/>
+        <result column="QUIZ_IMG_A" property="imageA"/>
+        <result column="QUIZ_IMG_B" property="imageB"/>
+        <result column="QUIZ_CORRECT_ANSWER" property="correctAnswer"/>
+        <result column="QUIZ_HINT" property="hint"/>
+        <result column="QUIZ_EXPLANATION" property="explanation"/>
+    </resultMap>
+
+    <resultMap id="QuizStatisticsResultMap" type="com.perfumeReco.vo.QuizStatistics">
+        <id column="QUIZ_NO" property="quizNo"/>
+        <result column="ATTEMPT_COUNT" property="attempCount"/>
+        <result column="CORRECT_COUNT" property="correctCount"/>
+    </resultMap>
+
+    <insert id="insertQuiz" parameterType="com.perfumeReco.vo.Quiz">
+        INSERT INTO QUIZ (QUIZ_NO, QUIZ_IMG_A, QUIZ_IMG_B, QUIZ_CORRECT_ANSWER, QUIZ_HINT, QUIZ_EXPLANATION)
+        VALUES (#{no}, #{imageA, jdbcType=BLOB}, #{imageB, jdbcType=BLOB}, #{correctAnswer}, #{hint}, #{explanation})
+    </insert>
+
+    <select id="getAllQuiz" resultMap="QuizResultMap">
+        select *
+        from quiz
+    </select>
+
+    <select id="getQuizStatistics" resultMap="QuizStatisticsResultMap">
+        select QUIZ_NO, ATTEMPT_COUNT, CORRECT_COUNT
+        from QUIZ_STATISTICS
+        where QUIZ_NO = #{ value }
+    </select>
+
+    <update id="updateQuizStatistics" parameterType="com.perfumeReco.vo.QuizStatistics">
+        UPDATE QUIZ_STATISTICS
+        SET ATTEMPT_COUNT = #{attempCount}, CORRECT_COUNT = #{correctCount}
+        WHERE QUIZ_NO = #{quizNo}
+    </update>
+
+</mapper>

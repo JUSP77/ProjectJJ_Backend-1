@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+
+    <mvc:annotation-driven>
+        <mvc:argument-resolvers>
+        </mvc:argument-resolvers>
+    </mvc:annotation-driven>
+
+    <!-- 정적리소스 관련 매핑 -->
+    <mvc:resources location="/resources/" mapping="/resources/**"></mvc:resources>
+    <!-- jsp 페이지 관련 설정 -->
+    <mvc:view-resolvers>
+        <mvc:jsp prefix="/WEB-INF/views/" suffix=".jsp"/>
+    </mvc:view-resolvers>
+
+    <!--
+        @Controller, @RestController 어노테이션이 부착된 클래스를 스캔해서 스프링컨테이너의 빈으로 등록시킨다.
+     -->
+    <!--
+    <context:component-scan base-package="com.sample.controller"></context:component-scan>
+    <context:component-scan base-package="com.sample.restcontroller"></context:component-scan>
+    <context:component-scan base-package="com.sample.exceptionhandler"></context:component-scan>
+    -->
+    <context:component-scan base-package="com.perfumeReco">
+        <!-- 스캔대상에 포함시키는 어노테이션 -->
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.RestController"/>
+        <context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+        <!-- 스캔대상에서 제외시키는 어노테이션 -->
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+    </context:component-scan>
+
+    <!-- 파일업로드를 지원하는 resolver를 스프링 컨테이너의 빈으로 등록 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="UTF-8" />
+    </bean>
+</beans>
