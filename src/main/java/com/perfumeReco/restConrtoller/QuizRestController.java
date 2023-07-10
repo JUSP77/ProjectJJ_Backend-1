@@ -3,17 +3,20 @@ package com.perfumeReco.restConrtoller;
 import com.perfumeReco.dto.ResponseDto;
 import com.perfumeReco.service.QuizService;
 import com.perfumeReco.service.UserAnswerService;
+import com.perfumeReco.utils.SessionUtils;
 import com.perfumeReco.vo.Quiz;
 import com.perfumeReco.vo.QuizStatistics;
 import com.perfumeReco.vo.UserAnswer;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -88,29 +91,77 @@ public class QuizRestController {
     }
 
     @PostMapping("userAnswer")
-    public void userAnswer(
+    public ResponseDto<String> userAnswer(
             @RequestParam String answer,
             @RequestParam int no,
-            HttpServletRequest request,
-            RedirectAttributes redirectAttributes
+            HttpServletRequest request
     ) {
-        try {
-            QuizStatistics quizStatistics = new QuizStatistics();
-            Date currentTime = new Date();
-            userAnswer.setQuizNo(no);
-            userAnswer.setUserAnswer(answer);
-            userAnswer.setSubmissionTime(currentTime);
-            userAnswerService.insertUserAnswer(userAnswer);
+        ResponseDto<String> response = new ResponseDto<>();
+        QuizStatistics quizStatistics = new QuizStatistics();
+        Date currentTime = new Date();
+        UserAnswer userAnswer = new UserAnswer();
 
-            quizService.updateQuizStatistics(no, answer);
+        HttpSession session = request.getSession(true);
+        String sessionId = session.getId();
 
-            redirectAttributes.addFlashAttribute("status", "OK");
-        } catch (IOException e) {
-            redirectAttributes.addFlashAttribute("status", "ERROR");
-            redirectAttributes.addFlashAttribute("error", "퀴즈 업로드에 실패했습니다: " + e.getMessage());
+        //세션에서 UserAnswerList를 가져오기
+        List<UserAnswer> userAnswerList = (List<UserAnswer>) SessionUtils.getAttribute(sessionId);
+
+        //UserAnswerList가 없을 경우 새로 생성
+        if(userAnswerList == null ){
+            userAnswerList = new ArrayList<>();
+            SessionUtils.addAttribute(sessionId, userAnswerList);
         }
+        userAnswer.setQuizNo(no);
+        userAnswer.setUserAnswer(answer);
+        userAnswer.setSubmissionTime(currentTime);
+        userAnswerList.add(userAnswer);
+
+        // 수정 요망
+        if (userAnswerList.size() == 5) {
+            try {
+                for (UserAnswer userAnswer1 : userAnswerList) {
+                    userAnswerService.insertUserAnswer(userAnswer1);
+                    quizService.updateQuizStatistics(userAnswer1.getQuizNo(), answer);
+                }
+                response.setStatus("OK");
+            } catch (IOException e) {
+                response.setStatus("ERROR");
+                e.printStackTrace();
+            } finally {
+                SessionUtils.removeAttribute(sessionId);
+            }
+        } else {
+            response.setStatus("Incomplete");
+        }
+        return response;
     }
 
+    @GetMapping("/result")
+    public ResponseDto<Result> getResult(HttpServletRequest request) {
+        ResponseDto<Result> response = new ResponseDto<>();
+
+        // 세션을 가져옴
+        HttpSession session = request.getSession();
+
+        // 문제를 푼 사용자의 세션 아이디와 현재 세션 아이디를 비교하여 검증
+        if (!session.getId().equals(session.getAttribute("userId"))) {
+            response.setStatus("Unauthorized");
+            return response;
+        }
+
+        // 문제를 푼 사용자의 세션에서 결과를 가져옴
+        String userAnswer = (String) session.getAttribute("userAnswer");
+
+        // 결과 생성
+        Result result = new Result();
+        result.setUserAnswer(userAnswer);
+
+        // 결과 반환
+        response.setItem(result);
+        response.setStatus("OK");
+        return response;
+    }
 
     @GetMapping("/getCount")
     public Map<String, Integer> getAttemptCount() {

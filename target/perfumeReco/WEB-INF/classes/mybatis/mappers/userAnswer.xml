@@ -8,11 +8,12 @@
         <result column="QUIZ_NO" property="quizNo"/>
         <result column="USER_ANSWER" property="userAnswer"/>
         <result column="SUBMISSION_TIME" property="submissionTime"/>
+        <result column="SESSION_ID" property="sessionId"/>
     </resultMap>
 
     <insert id="insertUserAnswer" parameterType="com.perfumeReco.vo.UserAnswer">
-        INSERT INTO USERANSWER (USER_ANSWER_ID, QUIZ_NO, USER_ANSWER, SUBMISSION_TIME)
-        VALUES (USER_ANSWER_ID.NEXTVAL, #{quizNo}, #{userAnswer}, #{submissionTime})
+        INSERT INTO USERANSWER (USER_ANSWER_ID, QUIZ_NO, USER_ANSWER, SUBMISSION_TIME, SESSION_ID)
+        VALUES (USER_ANSWER_ID.NEXTVAL, #{quizNo}, #{userAnswer}, #{submissionTime}, #{sessionId})
     </insert>
 
 </mapper>
