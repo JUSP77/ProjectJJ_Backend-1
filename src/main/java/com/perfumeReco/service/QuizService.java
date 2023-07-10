@@ -6,6 +6,7 @@ import com.perfumeReco.vo.Quiz;
 import com.perfumeReco.vo.QuizStatistics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -52,9 +53,8 @@ public class QuizService {
         return quizDao.getQuizStatistics(no);
     }
 
+    @Transactional
     public void updateQuizStatistics(int quizNo, String answer) throws IOException{
-                                                    // 여기에는 quizNo만 들어있는 상태
-
         QuizStatistics quizStatistics = new QuizStatistics();
 
         int attempCount = getQuizStatistics(quizNo).getAttempCount();
