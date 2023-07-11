@@ -3,17 +3,23 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.perfumeReco.dao.UserAnswerDao">
 
-    <resultMap id="ScoreResultMap" type="com.perfumeReco.vo.UserAnswer">
+    <resultMap id="UserAnswerResultMap" type="com.perfumeReco.vo.UserAnswer">
         <id column="USER_ANSWER_ID" property="userAnswerId"/>
         <result column="QUIZ_NO" property="quizNo"/>
         <result column="USER_ANSWER" property="userAnswer"/>
         <result column="SUBMISSION_TIME" property="submissionTime"/>
-        <result column="SESSION_ID" property="sessionId"/>
+        <result column="USER_ID" property="userId"/>
     </resultMap>
 
     <insert id="insertUserAnswer" parameterType="com.perfumeReco.vo.UserAnswer">
-        INSERT INTO USERANSWER (USER_ANSWER_ID, QUIZ_NO, USER_ANSWER, SUBMISSION_TIME, SESSION_ID)
-        VALUES (USER_ANSWER_ID.NEXTVAL, #{quizNo}, #{userAnswer}, #{submissionTime}, #{sessionId})
+        INSERT INTO USERANSWER (USER_ANSWER_ID, QUIZ_NO, USER_ANSWER, SUBMISSION_TIME, USER_ID)
+        VALUES (USER_ANSWER_ID.NEXTVAL, #{quizNo}, #{userAnswer}, #{submissionTime}, #{userId})
     </insert>
+
+    <select id="countUserCorrectAnswer" resultMap="UserAnswerResultMap">
+        SELECT USER_ANSWER
+        FROM USERANSWER
+        WHERE USER_ID = #{ userId }
+    </select>
 
 </mapper>

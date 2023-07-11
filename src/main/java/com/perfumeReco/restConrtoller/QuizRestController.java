@@ -5,6 +5,7 @@ import com.perfumeReco.service.QuizService;
 import com.perfumeReco.service.UserAnswerService;
 import com.perfumeReco.utils.SessionUtils;
 import com.perfumeReco.vo.Quiz;
+import com.perfumeReco.vo.QuizResultImg;
 import com.perfumeReco.vo.QuizStatistics;
 import com.perfumeReco.vo.UserAnswer;
 import org.apache.ibatis.annotations.Param;
@@ -90,29 +91,23 @@ public class QuizRestController {
         return null;
     }
 
+    private List<UserAnswer> userAnswerList = new ArrayList<>();
+
     @PostMapping("userAnswer")
     public ResponseDto<String> userAnswer(
-            @RequestParam String answer,
             @RequestParam int no,
+            @RequestParam String answer,
+            @RequestParam String userId,
             HttpServletRequest request
     ) {
+        System.out.println(no);
+
         ResponseDto<String> response = new ResponseDto<>();
-        QuizStatistics quizStatistics = new QuizStatistics();
         Date currentTime = new Date();
         UserAnswer userAnswer = new UserAnswer();
 
-        HttpSession session = request.getSession(true);
-        String sessionId = session.getId();
-
-        //세션에서 UserAnswerList를 가져오기
-        List<UserAnswer> userAnswerList = (List<UserAnswer>) SessionUtils.getAttribute(sessionId);
-
-        //UserAnswerList가 없을 경우 새로 생성
-        if(userAnswerList == null ){
-            userAnswerList = new ArrayList<>();
-            SessionUtils.addAttribute(sessionId, userAnswerList);
-        }
         userAnswer.setQuizNo(no);
+        userAnswer.setUserId(userId);
         userAnswer.setUserAnswer(answer);
         userAnswer.setSubmissionTime(currentTime);
         userAnswerList.add(userAnswer);
@@ -128,38 +123,10 @@ public class QuizRestController {
             } catch (IOException e) {
                 response.setStatus("ERROR");
                 e.printStackTrace();
-            } finally {
-                SessionUtils.removeAttribute(sessionId);
             }
         } else {
             response.setStatus("Incomplete");
         }
-        return response;
-    }
-
-    @GetMapping("/result")
-    public ResponseDto<Result> getResult(HttpServletRequest request) {
-        ResponseDto<Result> response = new ResponseDto<>();
-
-        // 세션을 가져옴
-        HttpSession session = request.getSession();
-
-        // 문제를 푼 사용자의 세션 아이디와 현재 세션 아이디를 비교하여 검증
-        if (!session.getId().equals(session.getAttribute("userId"))) {
-            response.setStatus("Unauthorized");
-            return response;
-        }
-
-        // 문제를 푼 사용자의 세션에서 결과를 가져옴
-        String userAnswer = (String) session.getAttribute("userAnswer");
-
-        // 결과 생성
-        Result result = new Result();
-        result.setUserAnswer(userAnswer);
-
-        // 결과 반환
-        response.setItem(result);
-        response.setStatus("OK");
         return response;
     }
 
@@ -171,4 +138,6 @@ public class QuizRestController {
         response.put("count", count);
         return response;
     }
+
 }
+
