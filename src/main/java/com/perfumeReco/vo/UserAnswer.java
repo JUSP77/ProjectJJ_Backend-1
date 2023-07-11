@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class UserAnswer {
 
-    private String sessionId;
+    private String userId;
     private int userAnswerId;
     private int quizNo;
     private String userAnswer;
@@ -12,12 +12,12 @@ public class UserAnswer {
 
     public UserAnswer(){}
 
-    public String getSessionId() {
-        return sessionId;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public int getUserAnswerId() {
@@ -51,10 +51,11 @@ public class UserAnswer {
     public void setSubmissionTime(Date submissionTime) {
         this.submissionTime = submissionTime;
     }
+
     @Override
     public String toString() {
         return "UserAnswer{" +
-                "sessionId='" + sessionId + '\'' +
+                "userId='" + userId + '\'' +
                 ", userAnswerId=" + userAnswerId +
                 ", quizNo=" + quizNo +
                 ", userAnswer='" + userAnswer + '\'' +

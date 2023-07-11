@@ -18,6 +18,12 @@
         <result column="CORRECT_COUNT" property="correctCount"/>
     </resultMap>
 
+    <resultMap id="QuizResultImgResultMap" type="com.perfumeReco.vo.QuizResultImg">
+        <id column="QUIZ_RESULT_IMG_NO" property="no"/>
+        <result column="QUIZ_RESULT_IMG_URL" property="url"/>
+        <result column="CORRECT_COUNT" property="correctCount"/>
+    </resultMap>
+
     <insert id="insertQuiz" parameterType="com.perfumeReco.vo.Quiz">
         INSERT INTO QUIZ (QUIZ_NO, QUIZ_IMG_A, QUIZ_IMG_B, QUIZ_CORRECT_ANSWER, QUIZ_HINT, QUIZ_EXPLANATION)
         VALUES (#{no}, #{imageA, jdbcType=BLOB}, #{imageB, jdbcType=BLOB}, #{correctAnswer}, #{hint}, #{explanation})
@@ -36,8 +42,16 @@
 
     <update id="updateQuizStatistics" parameterType="com.perfumeReco.vo.QuizStatistics">
         UPDATE QUIZ_STATISTICS
-        SET ATTEMPT_COUNT = #{attempCount}, CORRECT_COUNT = #{correctCount}
+        SET ATTEMPT_COUNT = #{attempCount},
+            CORRECT_COUNT = #{correctCount}
         WHERE QUIZ_NO = #{quizNo}
     </update>
+
+    <select id="getResultImg" resultMap="QuizResultImgResultMap">
+        SELECT QUIZ_RESULT_IMG_NO, QUIZ_RESULT_IMG_URL, CORRECT_COUNT
+        FROM QUIZ_RESULT_IMG
+        WHERE CORRECT_COUNT = #{countCorrectAnswer}
+    </select>
+
 
 </mapper>

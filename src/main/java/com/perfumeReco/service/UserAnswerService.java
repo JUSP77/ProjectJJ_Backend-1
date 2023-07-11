@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class UserAnswerService {
@@ -16,11 +17,13 @@ public class UserAnswerService {
     UserAnswerDao userAnswerDao;
 
     @Transactional
-    public ResponseDto<String> insertUserAnswer(UserAnswer userAnswer) throws IOException {
+    public void insertUserAnswer(UserAnswer userAnswer) throws IOException {
         ResponseDto<String> response = new ResponseDto<>();
-
         userAnswerDao.insertUserAnswer(userAnswer);
-        response.setStatus("OK");
-        return response;
     }
+
+    public List<UserAnswer> countUserCorrectAnswer(String userId){
+        return userAnswerDao.countUserCorrectAnswer(userId);
+    }
+
 }

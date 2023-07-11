@@ -3,6 +3,7 @@ package com.perfumeReco.service;
 import com.perfumeReco.dao.QuizDao;
 import com.perfumeReco.dto.ResponseDto;
 import com.perfumeReco.vo.Quiz;
+import com.perfumeReco.vo.QuizResultImg;
 import com.perfumeReco.vo.QuizStatistics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,5 +70,10 @@ public class QuizService {
         quizStatistics.setAttempCount(attempCount);
         quizStatistics.setQuizNo(quizNo);
         quizDao.updateQuizStatistics(quizStatistics);
+    }
+
+    public QuizResultImg getResultImg(int countCorrectAnswer){
+
+        return quizDao.getResultImg(countCorrectAnswer);
     }
 }
