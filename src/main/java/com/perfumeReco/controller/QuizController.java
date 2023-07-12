@@ -54,21 +54,14 @@ public class QuizController {
     @GetMapping("/result")
     @ResponseBody
     public Map<String, Object> getResult(
-            @RequestParam String userId
+            @RequestParam String userId,
+            @RequestParam int countCorrectAnswer
     ) {
         System.out.println(userId);
         Map<String, Object> response = new HashMap<>();
         List<QuizResultImg> resultImgList = new ArrayList<>();
 
-        List<UserAnswer> userAnswerList = userAnswerService.countUserCorrectAnswer(userId);
-        int correctAnswer = 0;
-        for(UserAnswer userAnswer : userAnswerList){
-            if(userAnswer.getUserAnswer().equals("O")){
-                correctAnswer ++;
-            }
-        }
-
-        QuizResultImg quizResultImg = quizService.getResultImg(correctAnswer);
+        QuizResultImg quizResultImg = quizService.getResultImg(countCorrectAnswer);
         System.out.println(quizResultImg.getUrl());
         System.out.println(quizResultImg.getNo());
         System.out.println(quizResultImg.getCorrectCount());
