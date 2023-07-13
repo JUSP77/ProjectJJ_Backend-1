@@ -15,6 +15,11 @@ public class HomeController {
     @Autowired
     QuizService quizService;
 
+    @GetMapping("/home")
+    public String home() {
+        return "/home";
+    }
+
     @GetMapping("/loginform")
     public String loginform() {
         return "member/loginform";
