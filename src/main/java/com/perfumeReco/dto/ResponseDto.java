@@ -7,6 +7,7 @@ public class ResponseDto<T> {
     private String status;
     private String error;
     private List<?> item;
+    private T data;
 
     public ResponseDto() {
     }
@@ -35,12 +36,21 @@ public class ResponseDto<T> {
         this.item = item;
     }
 
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+
     @Override
     public String toString() {
         return "ResponseDto{" +
                 "status='" + status + '\'' +
                 ", error='" + error + '\'' +
                 ", item=" + item +
+                ", data=" + data +
                 '}';
     }
 }

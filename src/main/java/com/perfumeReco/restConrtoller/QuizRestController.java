@@ -95,45 +95,31 @@ public class QuizRestController {
 
     @PostMapping("userAnswer")
     public ResponseDto<Integer> userAnswer(
-            @RequestParam int no,
-            @RequestParam String answer,
-            @RequestParam String userId,
-            HttpServletRequest request
+            @RequestBody List<UserAnswer> answers
     ) {
 
+        System.out.println(answers);
         ResponseDto<Integer> response = new ResponseDto<>();
-        List<Integer> countCorrectAnswerList = new ArrayList<>();
-        Date currentTime = new Date();
-        UserAnswer userAnswer = new UserAnswer();
-        int countCorrectAnswer = 0;
-        userAnswer.setQuizNo(no);
-        userAnswer.setUserId(userId);
-        userAnswer.setUserAnswer(answer);
-        userAnswer.setSubmissionTime(currentTime);
-        userAnswerList.add(userAnswer);
+        List<UserAnswer> answerList = new ArrayList<>();
+        Integer countCorrectAnswer = 0;
+        try {
 
-        // 수정 요망
-        if (userAnswerList.size() == 10) {
-            try {
-                for (UserAnswer userAnswer1 : userAnswerList) {
-                    userAnswerService.insertUserAnswer(userAnswer1);
-                    quizService.updateQuizStatistics(userAnswer1.getQuizNo(), answer);
-                    if(userAnswer1.getUserAnswer().equals("O")){
-                        countCorrectAnswer ++;
-                    }
+            for (UserAnswer ans : answers) {
+                System.out.println(ans.getQuizNo());
+                ans.setSubmissionTime(new Date());
+                userAnswerService.insertUserAnswer(ans);
+                quizService.updateQuizStatistics(ans.getQuizNo(), ans.getUserAnswer());
+                if(ans.getUserAnswer().equals(("O"))){
+                    countCorrectAnswer ++;
                     System.out.println(countCorrectAnswer);
                 }
-                countCorrectAnswerList.add(countCorrectAnswer);
-                response.setStatus("OK");
-                response.setItem(countCorrectAnswerList);
-            } catch (IOException e) {
-                response.setStatus("ERROR");
-                e.printStackTrace();
-            } finally {
-                userAnswerList.clear();
             }
-        } else {
-            response.setStatus("Incomplete");
+            response.setStatus("OK");
+            response.setData(countCorrectAnswer);
+
+        } catch (IOException e) {
+            response.setStatus("ERROR");
+            response.setError(e.getMessage());
         }
         return response;
     }
